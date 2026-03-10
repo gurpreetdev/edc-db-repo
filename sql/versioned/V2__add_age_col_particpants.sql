@@ -1,0 +1,1 @@
+ALTER TABLE Participants ADD Age INT NULL;
