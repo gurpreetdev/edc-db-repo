@@ -1,0 +1,1 @@
+ALTER TABLE Participants ADD Address NVARCHAR(60) NULL;

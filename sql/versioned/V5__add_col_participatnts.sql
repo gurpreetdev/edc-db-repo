@@ -1,0 +1,1 @@
+ALTER TABLE Participants ADD PhoneNo NVARCHAR(60) NULL;
