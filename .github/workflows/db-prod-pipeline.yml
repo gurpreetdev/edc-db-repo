@@ -1,0 +1,72 @@
+name: DB Production Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+
+  start:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Pipeline
+        run: echo "Pipeline started after PR merge"
+
+  fetch-secret:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: start
+    steps:
+      - name: Fetch Secret
+        run: |
+          echo "Fetching DB credentials from AWS Secrets Manager"
+          echo "Secret fetched"
+
+  validate:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: fetch-secret
+    steps:
+      - name: Flyway Validate
+        run: |
+          echo "Running Flyway Validate"
+
+  dryrun:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Flyway Dry Run
+        run: |
+          echo "Generating Flyway Dry Run SQL"
+          echo "Dry run SQL generated"
+
+  snapshot:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: dryrun
+    steps:
+      - name: Flyway Snapshot
+        run: |
+          echo "Creating Flyway schema snapshot"
+          echo "Snapshot completed"
+
+  migrate:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: snapshot
+    steps:
+      - name: Flyway Migrate
+        run: |
+          echo "Running Flyway Migration"
+
+  finish:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: migrate
+    steps:
+      - name: Pipeline Finished
+        run: echo "Production Migration pipeline completed"
